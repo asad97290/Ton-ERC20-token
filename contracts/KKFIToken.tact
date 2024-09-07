@@ -2,6 +2,8 @@
 import "./messages.tact";
 import "./jetton.tact";
 
+
+
 contract KKFI with Jetton {
     totalSupply: Int as coins;
     owner: Address;
@@ -24,6 +26,7 @@ contract KKFI with Jetton {
         self.requireOwner();  
         require(self.mintable, "Can't Mint Anymore");
         self.mint(msg.receiver, msg.amount, self.owner); // (to, amount, response_destination)
+
     }
     
     // handler for "MintClose" textual message - this is a textual string message, these cannot carry input arguments

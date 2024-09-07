@@ -1,9 +1,3 @@
-struct JettonWalletData {
-    balance: Int;
-    owner: Address;
-    master: Address;
-    walletCode: Cell;
-}
 
 
 @interface("org.ton.jetton.wallet")
@@ -127,3 +121,10 @@ contract JettonDefaultWallet {
     }
 }
 
+// should stay here. moving to the top cause ERROR!
+struct JettonWalletData {
+    balance: Int;
+    owner: Address;
+    master: Address;
+    walletCode: Cell;
+}

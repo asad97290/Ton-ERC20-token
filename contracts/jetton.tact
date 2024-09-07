@@ -53,7 +53,7 @@ trait Jetton with Ownable {
     }
 
  
-
+    // virtual functions can be overridden by users of this trait
     virtual fun getJettonWalletInit(address: Address): StateInit {
         return initOf JettonDefaultWallet(myAddress(), address); // myAddress() is the address of this contract
     }

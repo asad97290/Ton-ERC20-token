@@ -22,14 +22,11 @@ describe('KKFI', () => {
     beforeAll(async () => {
         blockchain = await Blockchain.create();
         
-        const cell = content;
         
         deployer = await blockchain.treasury('deployer');
         receiver = await blockchain.treasury('receiver');
 
-        kKFI = blockchain.openContract(await KKFI.fromInit(cell));
-
-
+        kKFI = blockchain.openContract(await KKFI.fromInit(content));
 
         const deployResult = await kKFI.send(
             deployer.getSender(),
@@ -49,12 +46,6 @@ describe('KKFI', () => {
             deploy: true,
             success: true,
         });
-
-
-     
-
-        
-
     });
 
     it('should check owner address', async () => {
@@ -62,7 +53,7 @@ describe('KKFI', () => {
         expect(owner).toEqualAddress(deployer.address);
     });
 
-    it("Test: whether contract deployed successfully", async () => {
+    it("should check whether contract deployed successfully", async () => {
         expect((await kKFI.getGetJettonData()).owner).toEqualAddress(deployer.address)
         expect((await kKFI.getGetJettonData()).totalSupply).toEqual(toNano("1"))
         expect((await kKFI.getGetJettonData()).max_supply).toEqual(toNano("1000000000"))
@@ -102,7 +93,7 @@ describe('KKFI', () => {
         expect(walletData.balance).toBeGreaterThanOrEqual(mintAmount);
     })
     
-    it('wallet owner should be able to send jettons', async () => {
+    it('should be able to transfer tokens', async () => {
         const playerWallet = await kKFI.getGetWalletAddress(receiver.address);
         jettonWallet = blockchain.openContract(JettonDefaultWallet.fromAddress(playerWallet));
         let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell().asSlice();
@@ -142,8 +133,6 @@ describe('KKFI', () => {
 
     });
 
-    
-
     it("should revert if non owner try to change token metadata",async () => {
         const jettonParams = {
             name: "KKFI",
@@ -170,7 +159,6 @@ describe('KKFI', () => {
         });
     })
 
-
     it('should revert if non owner try to mint', async () => {
         const mintAmount =  toNano("10");
         const deployResult = await kKFI.send(
@@ -192,7 +180,7 @@ describe('KKFI', () => {
       
     })
    
-    it('should not allow non owner to close mint', async () => {
+    it('should revert if non owner try to close mint', async () => {
         const deployResult =   await kKFI.send(
             receiver.getSender(), 
             { value: toNano("0.05") },
@@ -205,6 +193,7 @@ describe('KKFI', () => {
         });
       
     })
+
     it('should allow owner to close mint', async () => {
         const deployResult =   await kKFI.send(
             deployer.getSender(), 
