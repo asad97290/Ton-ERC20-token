@@ -17,17 +17,17 @@ export async function run(provider: NetworkProvider) {
 
     const sampleJetton = provider.open(await KKFI.fromInit(content));
 
-    await sampleJetton.send(
-        provider.sender(),
-        {
-            value: toNano('0.05'),
-        },
-        {
-            $$type: 'Mint',
-            amount: 1000000000000000000n,
-            receiver: provider.sender().address as Address
-        }
-    );
+    // await sampleJetton.send(
+    //     provider.sender(),
+    //     {
+    //         value: toNano('0.05'),
+    //     },
+    //     {
+    //         $$type: 'Mint',
+    //         amount: 1000000000000000000n,
+    //         receiver: provider.sender().address as Address
+    //     }
+    // );
 
     await provider.waitForDeploy(sampleJetton.address);
 

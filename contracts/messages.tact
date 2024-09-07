@@ -1,9 +1,10 @@
 
 message Mint {
-    amount: Int;
+    amount: Int as coins;
     receiver: Address;
 }
-message(0xf8a7ea5) TokenTransfer {
+
+message TokenTransfer {
     queryId: Int as uint64;
     amount: Int as coins;
     destination: Address;
@@ -13,7 +14,7 @@ message(0xf8a7ea5) TokenTransfer {
     forward_payload: Slice as remaining; // Comment Text message when Transfer the jetton
 }
 
-message(0x178d4519) TokenTransferInternal {
+message TokenTransferInternal {
     queryId: Int as uint64;
     amount: Int as coins;
     from: Address;
@@ -22,17 +23,14 @@ message(0x178d4519) TokenTransferInternal {
     forward_payload: Slice as remaining; // Comment Text message when Transfer the jetton
 }
 
-message(0x7362d09c) TokenNotification {
+message TokenNotification {
     queryId: Int as uint64;
     amount: Int as coins;
     from: Address;
     forward_payload: Slice as remaining; // Comment Text message when Transfer the jetton 
 }
 
-
-
-
-message(0xd53276db) TokenExcesses {
+message TokenExcesses {
     queryId: Int as uint64;
 }
 

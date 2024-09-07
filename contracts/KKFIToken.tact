@@ -14,28 +14,24 @@ contract KKFI with Jetton {
         self.totalSupply = 0;
         self.owner = sender(); // msg.sender
         self.mintable = true;
-        self.content = content;
+        self.content = content; // metadata for token like name, symbol, description and image
 
-        self.max_supply = 1000000000 * pow(10,9); // Initial Setting for max_supply
+        self.max_supply = 1000000000 * pow(10,9); 
     }
 
     receive(msg: Mint) {
         let ctx: Context = context();
-        require(ctx.sender == self.owner, "Only Owner");
+        self.requireOwner();  
         require(self.mintable, "Can't Mint Anymore");
         self.mint(msg.receiver, msg.amount, self.owner); // (to, amount, response_destination)
     }
-
-  
-
-    receive("Owner: MintClose") {
+    
+    // handler for "MintClose" textual message - this is a textual string message, these cannot carry input arguments
+    receive("MintClose") { 
         let ctx: Context = context();
-        require(ctx.sender == self.owner, "Only Owner");
-        self.mintable = false;
+        self.requireOwner();  
+        self.mintable = false; // close mint
     }
-
-
- 
 } 
 
 

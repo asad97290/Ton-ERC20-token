@@ -142,5 +142,80 @@ describe('KKFI', () => {
 
     });
 
+    
 
+    it("should revert if non owner try to change token metadata",async () => {
+        const jettonParams = {
+            name: "KKFI",
+            description: "This is description of Test tact jetton",
+            symbol: "XXXE",
+            image: "https://play-lh.googleusercontent.com/ahJtMe0vfOlAu1XJVQ6rcaGrQBgtrEZQefHy7SXB7jpijKhu1Kkox90XDuH8RmcBOXNn",
+        };
+        let content = buildOnchainMetadata(jettonParams)
+    
+        const unAuthMintResult = await kKFI.send(
+            receiver.getSender(),
+            {
+                value: toNano('0.05'),
+            },
+            {
+                $$type:'TokenUpdateContent',
+                content
+            }
+        );
+        expect(unAuthMintResult.transactions).toHaveTransaction({
+            from: receiver.address,
+            to: kKFI.address,
+            aborted: true,
+        });
+    })
+
+
+    it('should revert if non owner try to mint', async () => {
+        const mintAmount =  toNano("10");
+        const deployResult = await kKFI.send(
+            receiver.getSender(),
+            {
+                value: toNano('0.05'),
+            },
+            {
+                $$type: 'Mint',
+                amount: mintAmount,
+                receiver:receiver.address
+            }
+        );
+        expect(deployResult.transactions).toHaveTransaction({
+            from: receiver.address,
+            to: kKFI.address,
+            aborted: true,
+        });
+      
+    })
+   
+    it('should not allow non owner to close mint', async () => {
+        const deployResult =   await kKFI.send(
+            receiver.getSender(), 
+            { value: toNano("0.05") },
+            "MintClose"
+        );
+        expect(deployResult.transactions).toHaveTransaction({
+            from: receiver.address,
+            to: kKFI.address,
+            aborted: true
+        });
+      
+    })
+    it('should allow owner to close mint', async () => {
+        const deployResult =   await kKFI.send(
+            deployer.getSender(), 
+            { value: toNano("0.05") },
+            "MintClose"
+        );
+        expect(deployResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: kKFI.address,
+            success: true,
+        });
+      
+    })
 });
