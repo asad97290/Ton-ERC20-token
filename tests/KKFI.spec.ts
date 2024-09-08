@@ -137,6 +137,40 @@ describe('KKFI testcases', () => {
 
     });
 
+
+    it('should revert for transfer tokens internal', async () => {
+        const playerWallet = await kKFI.getGetWalletAddress(receiver.address);
+        jettonWallet = blockchain.openContract(JettonDefaultWallet.fromAddress(playerWallet));
+        let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell().asSlice();
+
+        const deployResult = await jettonWallet.send(
+            receiver.getSender(),
+            {
+                value: toNano('0.05'),
+            },
+            {
+                $$type: 'TokenTransferInternal',
+                queryId :0n,
+                amount :toNano('5'),
+                from:receiver.address,
+                response_destination:deployer.address,
+                forward_ton_amount:0n,
+                forward_payload: forwardPayload
+            }
+        );
+        
+        expect(deployResult.transactions).toHaveTransaction({
+            from: receiver.address,
+            to: jettonWallet.address,
+            aborted:true,
+            
+        });
+
+       
+
+    });
+
+
     it("should revert if non owner try to change token metadata",async () => {
         const jettonParams = {
             name: "KKFI",
