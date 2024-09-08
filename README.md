@@ -1,5 +1,6 @@
-# KKFI-Jetton-Token
+# KKFI Jetton Token
 
+## Install blueprint cli tool
 ```npm create ton@latest```
 
 ## Project structure
@@ -13,16 +14,16 @@
 
 ### Build
 
-`npx blueprint build` or `yarn blueprint build`
+`npx blueprint build` 
 
 ### Test
 
-`npx blueprint test` or `yarn blueprint test`
+`npx blueprint test` 
 
-### Deploy or run another script
+### Deploy script
 
-`npx blueprint run` or `yarn blueprint run`
+`npx blueprint run` 
 
 ### Add a new contract
 
-`npx blueprint create ContractName` or `yarn blueprint create ContractName`
+`npx blueprint create ContractName` 

@@ -15,9 +15,9 @@ export async function run(provider: NetworkProvider) {
     // Create content Cell
     let content = buildOnchainMetadata(jettonParams);
 
-    const sampleJetton = provider.open(await KKFI.fromInit(content));
+    const KKFIJetton = provider.open(await KKFI.fromInit(content));
 
-    // await sampleJetton.send(
+    // await KKFIJetton.send(
     //     provider.sender(),
     //     {
     //         value: toNano('0.05'),
@@ -29,7 +29,6 @@ export async function run(provider: NetworkProvider) {
     //     }
     // );
 
-    await provider.waitForDeploy(sampleJetton.address);
+    await provider.waitForDeploy(KKFIJetton.address);
 
-    // run methods on `sampleJetton`
 }

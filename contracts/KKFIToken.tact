@@ -24,7 +24,7 @@ contract KKFI with Jetton {
     receive(msg: Mint) {
         let ctx: Context = context();
         self.requireOwner();  
-        require(self.mintable, "Can't Mint Anymore");
+        require(self.mintable, "Mint Disabled");
         self.mint(msg.receiver, msg.amount, self.owner); // (to, amount, response_destination)
 
     }

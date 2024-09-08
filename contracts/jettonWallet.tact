@@ -1,7 +1,13 @@
 
+struct JettonWalletData {
+    balance: Int;
+    owner: Address;
+    master: Address;
+    walletCode: Cell;
+}
 
 @interface("org.ton.jetton.wallet")
-contract JettonDefaultWallet {
+contract JettonWallet {
     const minTonsForStorage: Int = ton("0.01");
     const gasConsumption: Int = ton("0.01");
 
@@ -29,7 +35,7 @@ contract JettonDefaultWallet {
         self.balance = self.balance - msg.amount; 
         require(self.balance >= 0, "Invalid balance");
 
-        let init: StateInit = initOf JettonDefaultWallet(self.master, msg.destination);  
+        let init: StateInit = initOf JettonWallet(self.master, msg.destination);  
         let walletAddress: Address = contractAddress(init);
         send(SendParameters{
                 to: walletAddress, 
@@ -53,7 +59,7 @@ contract JettonDefaultWallet {
         let ctx: Context = context();
 
         if (ctx.sender != self.master) {
-            let sinit: StateInit = initOf JettonDefaultWallet(self.master, msg.from);
+            let sinit: StateInit = initOf JettonWallet(self.master, msg.from);
             require(contractAddress(sinit) == ctx.sender, "Invalid sender!");
         }
 
@@ -116,15 +122,9 @@ contract JettonDefaultWallet {
             balance: self.balance,
             owner: self.owner,
             master: self.master,
-            walletCode: (initOf JettonDefaultWallet(self.master, self.owner)).code
+            walletCode: (initOf JettonWallet(self.master, self.owner)).code
         };
     }
 }
 
-// should stay here. moving to the top cause ERROR!
-struct JettonWalletData {
-    balance: Int;
-    owner: Address;
-    master: Address;
-    walletCode: Cell;
-}
+

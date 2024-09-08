@@ -5,7 +5,7 @@ import '@ton/test-utils';
 import { JettonDefaultWallet } from '../build/KKFI/tact_JettonDefaultWallet';
 import { buildOnchainMetadata } from '../utils/jetton-helpers';
 
-describe('KKFI', () => {
+describe('KKFI testcases', () => {
     let blockchain: Blockchain;
     let deployer: SandboxContract<TreasuryContract>;
     let receiver: SandboxContract<TreasuryContract>;
@@ -96,6 +96,9 @@ describe('KKFI', () => {
     it('should be able to transfer tokens', async () => {
         const playerWallet = await kKFI.getGetWalletAddress(receiver.address);
         jettonWallet = blockchain.openContract(JettonDefaultWallet.fromAddress(playerWallet));
+        let senderBalance = await jettonWallet.getGetWalletData();
+        expect(senderBalance.balance).toBeGreaterThanOrEqual(toNano('11'));
+        expect(senderBalance.owner).toEqualAddress(receiver.address);
         let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell().asSlice();
 
         const deployResult = await jettonWallet.send(
@@ -121,7 +124,8 @@ describe('KKFI', () => {
             success: true,
         });
 
-
+        senderBalance = await jettonWallet.getGetWalletData();
+        expect(senderBalance.balance).toBeGreaterThanOrEqual(toNano('6'));
 
         const receiverWallet = await kKFI.getGetWalletAddress(deployer.address);
         jettonWallet = blockchain.openContract(JettonDefaultWallet.fromAddress(receiverWallet));
@@ -159,6 +163,33 @@ describe('KKFI', () => {
         });
     })
 
+
+    it("should allow owner to change token metadata",async () => {
+        const jettonParams = {
+            name: "KKFI",
+            description: "This is description of Test tact jetton",
+            symbol: "XXXE",
+            image: "https://play-lh.googleusercontent.com/ahJtMe0vfOlAu1XJVQ6rcaGrQBgtrEZQefHy7SXB7jpijKhu1Kkox90XDuH8RmcBOXNn",
+        };
+        let content = buildOnchainMetadata(jettonParams)
+    
+        const result = await kKFI.send(
+            deployer.getSender(),
+            {
+                value: toNano('0.05'),
+            },
+            {
+                $$type:'TokenUpdateContent',
+                content
+            }
+        );
+        expect(result.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: kKFI.address,
+            success: true,
+        });
+    })
+
     it('should revert if non owner try to mint', async () => {
         const mintAmount =  toNano("10");
         const deployResult = await kKFI.send(
@@ -174,6 +205,27 @@ describe('KKFI', () => {
         );
         expect(deployResult.transactions).toHaveTransaction({
             from: receiver.address,
+            to: kKFI.address,
+            aborted: true,
+        });
+      
+    })
+
+    it('should revert if try to mint more then max supply', async () => {
+        const mintAmount =  toNano("1000000000");
+        const deployResult = await kKFI.send(
+            deployer.getSender(),
+            {
+                value: toNano('0.05'),
+            },
+            {
+                $$type: 'Mint',
+                amount: mintAmount,
+                receiver:receiver.address
+            }
+        );
+        expect(deployResult.transactions).toHaveTransaction({
+            from: deployer.address,
             to: kKFI.address,
             aborted: true,
         });

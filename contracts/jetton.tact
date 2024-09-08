@@ -1,5 +1,5 @@
 import "@stdlib/ownable";
-import "./jettonDefaultWallet.tact";
+import "./jettonWallet.tact";
 
 struct JettonData {
     totalSupply: Int;
@@ -33,7 +33,7 @@ trait Jetton with Ownable {
         require(self.totalSupply + amount <= self.max_supply, "The total supply will be overlapping.");
         self.totalSupply = self.totalSupply + amount; // Update total supply
 
-        let winit: StateInit = self.getJettonWalletInit(to); // Create message
+        let winit: StateInit = self.getJettonWalletInit(to); 
         send(SendParameters{
             to: contractAddress(winit), 
             value: 0, 
@@ -54,8 +54,9 @@ trait Jetton with Ownable {
 
  
     // virtual functions can be overridden by users of this trait
+    // create new JettonWallet for each holder of token
     virtual fun getJettonWalletInit(address: Address): StateInit {
-        return initOf JettonDefaultWallet(myAddress(), address); // myAddress() is the address of this contract
+        return initOf JettonWallet(myAddress(), address); // myAddress() is the address of this contract
     }
 
     // ====== Get Methods ====== //
